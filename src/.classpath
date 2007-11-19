@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="lib" path="U:/jaquino/CVS/jump/lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="U:/jaquino/CVS/jump/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="U:/jaquino/CVS/jump/lib/junit.jar"/>
+	<classpathentry kind="lib" path="U:/jaquino/CVS/jump/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="U:/jaquino/CVS/jump/lib/Jama-1.0.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry sourcepath="C:/Downloads/bsh-2.0b1-src.jar" kind="lib" path="U:/jaquino/CVS/jump/lib/bsh-2.0b1.jar"/>
+	<classpathentry kind="src" path="/jts"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
