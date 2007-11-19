@@ -428,8 +428,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 } else {
                     //check to see if this was a tag we want to store as a column
                     try {
-                        if ((index = GMLinput.match(lastStartTag_qName,
-                                        lastStartTag_atts)) > -1) {
+                        if (   ((index = GMLinput.match(lastStartTag_qName,lastStartTag_atts)) > -1) &&
+                                (lastStartTag_qName.equalsIgnoreCase(qName))
+                                ) {
                             // System.out.println("value of " + GMLinput.columnName(index)+" : " +  GMLinput.getColumnValue(index,tagBody, lastStartTag_atts) );
                             currentFeature.setAttribute(GMLinput.columnName(
                                     index),
