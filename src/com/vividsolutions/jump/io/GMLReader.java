@@ -48,7 +48,7 @@ import java.util.StringTokenizer;
  *  GMLReader is a {@link JUMPReader} specialized to read GML files.
  *
  *  <p>
- *     DataProperties for the JCSReader load(DataProperties) interface: 
+ *     DataProperties for the JCSReader load(DataProperties) interface:
  *  </p>
  *  <p>
  *  <table border='1' cellspacing='0' cellpadding='4'>
@@ -78,14 +78,14 @@ import java.util.StringTokenizer;
  *    <tr>
  *      <td>CompressedFile</td>
  *      <td>
- *        File name (a .zip or .gz) with a .jml/.xml/.gml inside 
+ *        File name (a .zip or .gz) with a .jml/.xml/.gml inside
  *        (specified by File)
  *      </td>
  *    </tr>
  *
  *    <tr>
  *      <td>
- *        CompressedFileTemplate</td><td>File name (.zip or .gz) 
+ *        CompressedFileTemplate</td><td>File name (.zip or .gz)
  *        with the input template in (specified by InputTemplateFile)
  *      </td>
  *    </tr>
@@ -104,7 +104,7 @@ import java.util.StringTokenizer;
  *     gmlReader = new GMLReader();
  *     gmlReader.load( DriverProperties) ; // has InputFile and InputTemplate
  *  </pre>
- *  or: 
+ *  or:
  *  <pre>
  *     gmlReader.setInputTemplate( GMLInputTemplate);
  *     gmlReader.load( <Reader> , <stream name> );
@@ -139,7 +139,7 @@ import java.util.StringTokenizer;
  *                  \|
  *        4<-------->3
  *           Geometry start/end
- *</PRE> 
+ *</PRE>
  *  <br>
  *  For multi-geometries <br>
  *  On start Multi-geometry, increment state by 1 (or jump to 1000 if at state
@@ -189,15 +189,15 @@ import java.util.StringTokenizer;
  *  BEGIN innerboundary BEGIN linearring END linearring -> put points in
  *  linearRing END innerboundary -> add linearRing to innerBoundary list END
  *  polygon -> build polygon (put in geometry, which is recursivegeometry[0] END
- *  geometry => add to feature collection 
+ *  geometry => add to feature collection
  *  </pre>
  *
- *  Most of the work is done in the endTag method! 
+ *  Most of the work is done in the endTag method!
  *
  */
 public class GMLReader extends DefaultHandler implements JUMPReader {
     static int STATE_GET_COLUMNS = 3;
-
+    
     /**
      *  STATE   MEANING <br>
      *  0      Init <br>
@@ -227,7 +227,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     Attributes lastStartTag_atts;
     String lastStartTag_name;
     String lastStartTag_qName; //accumulate values inside a tag
-
+    
     // info about the last start tag encountered
     String lastStartTag_uri;
     LineString lineString;
@@ -235,16 +235,16 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     LinearRing outerBoundary; //list of LinearRing
     ArrayList pointList = new ArrayList(); // list of accumulated points (Coordinate)
     Polygon polygon; // polygon
-
+    
     // higherlevel geomery object
     ArrayList recursivegeometry = new ArrayList();
-
+    
     // low-level geometry objects
     Coordinate singleCoordinate = new Coordinate();
     String streamName; //result geometry  -
     String tagBody;
     XMLReader xr; //see above
-
+    
     /**
      *  Constructor - make a SAXParser and have this GMLReader be its
      *  ContentHandler and ErrorHandler.
@@ -255,7 +255,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         xr.setContentHandler(this);
         xr.setErrorHandler(this);
     }
-
+    
     /**
      *  Attach a GMLInputTemplate information class.
      *
@@ -264,7 +264,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     public void setInputTemplate(GMLInputTemplate template) {
         GMLinput = template;
     }
-
+    
     /**
      *  SAX handler - store and accumulate tag bodies
      *
@@ -274,7 +274,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      *@exception  SAXException  Description of the Exception
      */
     public void characters(char[] ch, int start, int length)
-        throws SAXException {
+    throws SAXException {
         try {
             String part;
             part = new String(ch, start, length);
@@ -283,7 +283,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             throw new SAXException(e.getMessage());
         }
     }
-
+    
     /**
      *  SAX HANDLER - move to state 0
      */
@@ -291,7 +291,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         //System.out.println("End document");
         STATE = STATE_INIT;
     }
-
+    
     /**
      *  SAX handler - handle state information and transitions based on ending
      *  elements Most of the work of the parser is done here.
@@ -302,17 +302,17 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      *@exception  SAXException  Description of the Exception
      */
     public void endElement(String uri, String name, String qName)
-        throws SAXException {
+    throws SAXException {
         try {
             int index;
-
+            
             // System.out.println("End element: " + qName);
             if (STATE == STATE_INIT) {
                 tagBody = "";
-
+                
                 return; //something wrong
             }
-
+            
             if (STATE > STATE_GET_COLUMNS) {
                 if (isMultiGeometryTag(qName)) {
                     if (STATE == STATE_PARSE_GEOM_NESTED) {
@@ -320,32 +320,32 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                     } else {
                         //build the geometry that was in that collection
                         Geometry g;
-
+                        
                         g = geometryFactory.buildGeometry(geometry);
                         geometry = (ArrayList) recursivegeometry.get(STATE -
                                 STATE_PARSE_GEOM_NESTED - 1);
                         geometry.add(g);
                         recursivegeometry.remove(STATE -
-                            STATE_PARSE_GEOM_NESTED);
+                                STATE_PARSE_GEOM_NESTED);
                         g = null;
-
+                        
                         STATE--;
                     }
                 }
-
+                
                 if (GMLinput.isGeometryElement(qName)) {
                     tagBody = "";
                     STATE = STATE_GET_COLUMNS;
-
+                    
                     finalGeometry = geometryFactory.buildGeometry(geometry);
-
+                    
                     //System.out.println("end geom: "+finalGeometry.toString() );
                     currentFeature.setGeometry(finalGeometry);
                     currentGeometryNumb++;
-
+                    
                     return;
                 }
-
+                
                 //these correspond to <coord><X>0.0</X><Y>0.0</Y></coord>
                 if ((qName.compareToIgnoreCase("X") == 0) ||
                         (qName.compareToIgnoreCase("gml:X") == 0)) {
@@ -370,9 +370,9 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 } else if ((qName.compareToIgnoreCase("linearring") == 0) ||
                         (qName.compareToIgnoreCase("gml:linearring") == 0)) {
                     Coordinate[] c = new Coordinate[0];
-
+                    
                     c = (Coordinate[]) pointList.toArray(c);
-
+                    
                     //c= (Coordinate[])l;
                     linearRing = geometryFactory.createLinearRing(c);
                 } else if ((qName.compareToIgnoreCase("outerBoundaryIs") == 0) ||
@@ -385,56 +385,56 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                         (qName.compareToIgnoreCase("gml:polygon") == 0)) {
                     //LinearRing[] lrs = new LinearRing[1];
                     LinearRing[] lrs = new LinearRing[0];
-
+                    
                     lrs = (LinearRing[]) innerBoundaries.toArray(lrs);
                     polygon = geometryFactory.createPolygon(outerBoundary, lrs);
                     geometry.add(polygon);
                 } else if ((qName.compareToIgnoreCase("linestring") == 0) ||
                         (qName.compareToIgnoreCase("gml:linestring") == 0)) {
                     Coordinate[] c = new Coordinate[0];
-
+                    
                     c = (Coordinate[]) pointList.toArray(c);
-
+                    
                     lineString = geometryFactory.createLineString(c);
                     geometry.add(lineString);
                 } else if ((qName.compareToIgnoreCase("point") == 0) ||
                         (qName.compareToIgnoreCase("gml:point") == 0)) {
                     apoint = geometryFactory.createPoint((Coordinate) pointList.get(
-                                0));
+                            0));
                     geometry.add(apoint);
                 }
             } else if (STATE == STATE_GET_COLUMNS) {
                 if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
                     tagBody = "";
                     STATE = STATE_WAIT_FEATURE_TAG;
-
+                    
                     //System.out.println("end feature");
                     //create a feature and put it inside the featurecollection
                     if (currentFeature.getGeometry() == null) {
                         Geometry g = currentFeature.getGeometry();
-
+                        
                         if (g != null) {
                             System.out.println(g.toString());
                         }
-
+                        
                         throw new ParseException(
-                            "no geometry specified in feature");
+                                "no geometry specified in feature");
                     }
-
+                    
                     fc.add(currentFeature);
                     currentFeature = null;
-
+                    
                     return;
                 } else {
                     //check to see if this was a tag we want to store as a column
                     try {
-                        if (   ((index = GMLinput.match(lastStartTag_qName,lastStartTag_atts)) > -1) &&
-                                (lastStartTag_qName.equalsIgnoreCase(qName))
-                                ) {
+                        if (   ((index = GMLinput.match(lastStartTag_qName,lastStartTag_atts)) > -1)
+                        && (lastStartTag_qName.equalsIgnoreCase(qName))
+                        ) {
                             // System.out.println("value of " + GMLinput.columnName(index)+" : " +  GMLinput.getColumnValue(index,tagBody, lastStartTag_atts) );
                             currentFeature.setAttribute(GMLinput.columnName(
                                     index),
-                                GMLinput.getColumnValue(index, tagBody,
+                                    GMLinput.getColumnValue(index, tagBody,
                                     lastStartTag_atts));
                         }
                     } catch (Exception e) {
@@ -442,37 +442,37 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                         // we cannot send it back because the function its overiding doesnt allow
                         e.printStackTrace();
                     }
-
+                    
                     tagBody = "";
                 }
             } else if (STATE == STATE_WAIT_FEATURE_TAG) {
                 if (qName.compareToIgnoreCase(GMLinput.collectionTag) == 0) {
                     STATE = STATE_INIT; //finish
-
+                    
                     //System.out.println("DONE!");
                     tagBody = "";
-
+                    
                     return;
                 }
             } else if (STATE == STATE_WAIT_COLLECTION_TAG) {
                 tagBody = "";
-
+                
                 return; //still look for start collection tag
             }
         } catch (Exception e) {
             throw new SAXException(e.getMessage());
         }
     }
-
+    
     public void error(SAXParseException exception) throws SAXException {
         throw exception;
     }
-
+    
     public void fatalError(SAXParseException exception)
-        throws SAXException {
+    throws SAXException {
         throw exception;
     }
-
+    
     /**
      *  Main Entry - load in a GML file
      *
@@ -482,28 +482,28 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      *@exception  Exception                   Description of the Exception
      */
     public FeatureCollection read(DriverProperties dp)
-        throws IllegalParametersException, Exception {
+    throws IllegalParametersException, Exception {
         FeatureCollection fc;
         GMLInputTemplate gmlTemplate;
         String inputFname;
         boolean isCompressed;
         boolean isCompressed_template;
-
+        
         isCompressed_template = (dp.getProperty("CompressedFileTemplate") != null);
-
+        
         isCompressed = (dp.getProperty("CompressedFile") != null);
-
+        
         inputFname = dp.getProperty("File");
-
+        
         if (inputFname == null) {
             inputFname = dp.getProperty("DefaultValue");
         }
-
+        
         if (inputFname == null) {
             throw new IllegalParametersException(
-                "call to GMLReader.read() has DataProperties w/o a InputFile specified");
+                    "call to GMLReader.read() has DataProperties w/o a InputFile specified");
         }
-
+        
         if (dp.getProperty("TemplateFile") == null) {
             // load from .gml file
             if (isCompressed) {
@@ -518,50 +518,50 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             //template file specified
             if (isCompressed_template) {
                 InputStream in = CompressedFile.openFile(dp.getProperty(
-                            "TemplateFile"),
+                        "TemplateFile"),
                         dp.getProperty("CompressedFileTemplate"));
                 gmlTemplate = inputTemplateFromFile(in);
                 in.close();
             } else {
                 if (isCompressed) //special case if the .gml file is compressed, and a template file is specified
-                 {
+                {
                     if (dp.getProperty("CompressedFile").equals(dp.getProperty(
-                                    "TemplateFile"))) //the template file is the compressed file
-                     {
+                            "TemplateFile"))) //the template file is the compressed file
+                    {
                         InputStream in = CompressedFile.openFile(inputFname,
                                 dp.getProperty("CompressedFile"));
                         gmlTemplate = inputTemplateFromFile(in);
                         in.close();
                     } else {
                         gmlTemplate = inputTemplateFromFile(dp.getProperty(
-                                    "TemplateFile"));
+                                "TemplateFile"));
                     }
                 } else {
                     //normal load
                     gmlTemplate = inputTemplateFromFile(dp.getProperty(
-                                "TemplateFile"));
+                            "TemplateFile"));
                 }
             }
         }
-
+        
         java.io.Reader r;
-
+        
         this.setInputTemplate(gmlTemplate);
-
+        
         if (isCompressed) {
             r = new BufferedReader(new InputStreamReader(
-                        CompressedFile.openFile(inputFname,
-                            dp.getProperty("CompressedFile"))));
+                    CompressedFile.openFile(inputFname,
+                    dp.getProperty("CompressedFile"))));
         } else {
             r = new BufferedReader(new FileReader(inputFname));
         }
-
+        
         fc = read(r, inputFname);
         r.close();
-
+        
         return fc;
     }
-
+    
     /**
      *  Helper function - calls read(java.io.Reader r,String readerName) with the
      *  readerName "Unknown Stream". You should have already called
@@ -574,7 +574,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
     public FeatureCollection read(java.io.Reader r) throws Exception {
         return read(r, "Unknown Stream");
     }
-
+    
     /**
      *  Main function to read a GML file. You should have already called
      *  setInputTempalate().
@@ -585,39 +585,39 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      *@exception  Exception  Description of the Exception
      */
     public FeatureCollection read(java.io.Reader r, String readerName)
-        throws Exception {
+    throws Exception {
         LineNumberReader myReader = new LineNumberReader(r);
-
+        
         if (GMLinput == null) {
             throw new ParseException(
-                "you must set the GMLinput template first!");
+                    "you must set the GMLinput template first!");
         }
-
+        
         streamName = readerName;
-
+        
         fcmd = GMLinput.toFeatureSchema();
         fc = new FeatureDataset(fcmd);
-
+        
         try {
             xr.parse(new InputSource(myReader));
         } catch (SAXParseException e) {
             throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
-                lastStartTag_qName + ".  Reader reports last line read as " +
-                myReader.getLineNumber(),
-                streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
-                ") ", e.getLineNumber(), e.getColumnNumber());
+                    lastStartTag_qName + ".  Reader reports last line read as " +
+                    myReader.getLineNumber(),
+                    streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
+                    ") ", e.getLineNumber(), e.getColumnNumber());
         } catch (SAXException e) {
             throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
-                lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
+                    lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
         }
-
+        
         return fc;
     }
-
+    
     ////////////////////////////////////////////////////////////////////
     // Event handlers.
     ////////////////////////////////////////////////////////////////////
-
+    
     /**
      *  SAX handler - move to state 1
      */
@@ -626,7 +626,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         tagBody = "";
         STATE = STATE_WAIT_COLLECTION_TAG;
     }
-
+    
     /**
      *  SAX handler. Handle state and state transitions based on an element
      *  starting
@@ -638,7 +638,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      *@exception  SAXException  Description of the Exception
      */
     public void startElement(String uri, String name, String qName,
-        Attributes atts) throws SAXException {
+            Attributes atts) throws SAXException {
         try {
             //System.out.println("Start element: " + qName);
             tagBody = "";
@@ -646,30 +646,30 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             lastStartTag_name = name;
             lastStartTag_qName = qName;
             lastStartTag_atts = atts;
-
+            
             if (STATE == STATE_INIT) {
                 return; //something wrong
             }
-
+            
             if ((STATE == STATE_WAIT_COLLECTION_TAG) &&
                     (qName.compareToIgnoreCase(GMLinput.collectionTag) == 0)) {
                 //found the collection tag
                 // System.out.println("found collection");
                 STATE = STATE_WAIT_FEATURE_TAG;
-
+                
                 return;
             }
-
+            
             if ((STATE == STATE_WAIT_FEATURE_TAG) &&
                     (qName.compareToIgnoreCase(GMLinput.featureTag) == 0)) {
                 //found the feature tag
                 //System.out.println("found feature");
                 currentFeature = new BasicFeature(fcmd);
                 STATE = STATE_GET_COLUMNS;
-
+                
                 return;
             }
-
+            
             if ((STATE == STATE_GET_COLUMNS) &&
                     GMLinput.isGeometryElement(qName)) {
                 //found the geom tag
@@ -677,14 +677,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 recursivegeometry = new ArrayList();
                 geometry = new ArrayList();
                 recursivegeometry.add(geometry);
-
+                
                 // recursivegeometry[0] = geometry
                 finalGeometry = null;
                 STATE = STATE_PARSE_GEOM_SIMPLE;
-
+                
                 return;
             }
-
+            
             if ((STATE >= STATE_PARSE_GEOM_SIMPLE) &&
                     ((qName.compareToIgnoreCase("coord") == 0) ||
                     (qName.compareToIgnoreCase("gml:coord") == 0))) {
@@ -692,7 +692,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 singleCoordinate.y = Double.NaN;
                 singleCoordinate.z = Double.NaN;
             }
-
+            
             if ((STATE >= STATE_PARSE_GEOM_SIMPLE) &&
                     (!((qName.compareToIgnoreCase("X") == 0) ||
                     (qName.compareToIgnoreCase("gml:x") == 0) ||
@@ -704,13 +704,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                     (qName.compareToIgnoreCase("gml:coord") == 0)))) {
                 pointList.clear(); //clear out any accumulated points
             }
-
+            
             if ((STATE >= STATE_PARSE_GEOM_SIMPLE) &&
                     ((qName.compareToIgnoreCase("polygon") == 0) ||
                     (qName.compareToIgnoreCase("gml:polygon") == 0))) {
                 innerBoundaries.clear(); //polygon just started - clear out the last one
             }
-
+            
             if ((STATE > STATE_GET_COLUMNS) && (isMultiGeometryTag(qName))) {
                 //in state 4 or a 1000 state and found a start GC (or Multi-geom) event
                 if (STATE == STATE_PARSE_GEOM_SIMPLE) {
@@ -726,14 +726,14 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
             throw new SAXException(e.getMessage());
         }
     }
-
+    
     ////////////////////////////////////////////////////////////////////
     // Error handlers.
     ////////////////////////////////////////////////////////////////////
     public void warning(SAXParseException exception) throws SAXException {
         throw exception;
     }
-
+    
     /**
      *  returns true if the the string represents a multi* geometry type
      *
@@ -746,37 +746,37 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 (s.substring(0, 5).compareToIgnoreCase("gml:") == 0)) {
             s = s.substring(5);
         }
-
+        
         if ((s.compareToIgnoreCase("multigeometry") == 0) ||
                 (s.compareToIgnoreCase("multipoint") == 0) ||
                 (s.compareToIgnoreCase("multilinestring") == 0) ||
                 (s.compareToIgnoreCase("multipolygon") == 0)) {
             return true;
         }
-
+        
         return false;
     }
-
+    
     private GMLInputTemplate inputTemplateFromFile(InputStream in)
-        throws ParseException, FileNotFoundException, IOException {
+    throws ParseException, FileNotFoundException, IOException {
         GMLInputTemplate result;
         java.io.Reader r = new BufferedReader(new InputStreamReader(in));
         result = inputTemplate(r);
         r.close();
-
+        
         return result;
     }
-
+    
     private GMLInputTemplate inputTemplateFromFile(String filename)
-        throws ParseException, FileNotFoundException, IOException {
+    throws ParseException, FileNotFoundException, IOException {
         GMLInputTemplate result;
         java.io.Reader r = new BufferedReader(new FileReader(filename));
         result = inputTemplate(r);
         r.close();
-
+        
         return result;
     }
-
+    
     /**
      *  Parse a bunch of points - stick them in pointList. Handles 2d and 3d.
      *
@@ -792,31 +792,31 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
         StringBuffer sb;
         int t;
         char ch;
-
+        
         //remove \n and \r and replace with spaces
         sb = new StringBuffer(ptString);
-
+        
         for (t = 0; t < sb.length(); t++) {
             ch = sb.charAt(t);
-
+            
             if ((ch == '\n') || (ch == '\r')) {
                 sb.setCharAt(t, ' ');
             }
         }
-
+        
         StringTokenizer stokenizer = new StringTokenizer(new String(sb), " ",
                 false);
-
+        
         while (stokenizer.hasMoreElements()) {
             //have a point in memory - handle the single point
             aPoint = stokenizer.nextToken();
             stokenizerPoint = new StringTokenizer(aPoint, ",", false);
             coord.x = coord.y = coord.z = Double.NaN;
             dim = 0;
-
+            
             while (stokenizerPoint.hasMoreElements()) {
                 numb = stokenizerPoint.nextToken();
-
+                
                 if (dim == 0) {
                     coord.x = Double.parseDouble(numb);
                 } else if (dim == 1) {
@@ -824,26 +824,26 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                 } else if (dim == 3) {
                     coord.z = Double.parseDouble(numb);
                 }
-
+                
                 dim++;
             }
-
+            
             pointList.add(coord); //remember it
             coord = new Coordinate();
             stokenizerPoint = null;
         }
     }
-
+    
     private GMLInputTemplate inputTemplate(java.io.Reader r)
-        throws IOException, ParseException {
+    throws IOException, ParseException {
         GMLInputTemplate gmlTemplate = new GMLInputTemplate();
         gmlTemplate.load(r);
         r.close();
-
+        
         if (!(gmlTemplate.loaded)) {
             throw new ParseException("Failed to load GML input template");
         }
-
+        
         return gmlTemplate;
     }
 }
