@@ -34,6 +34,7 @@ package com.vividsolutions.jump.util.java2xml;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
 
 import org.jdom.output.XMLOutputter;
 
@@ -71,9 +72,10 @@ public class Java2XML extends XMLBinder {
         Document document = new Document(new Element(rootTagName));
         write(object, document.getRootElement(), specElements(object.getClass()));
 
-        XMLOutputter xmlOutputter = new XMLOutputter();
-        xmlOutputter.setNewlines(true);
-        xmlOutputter.setIndent(true);
+        Format frmt = Format.getCompactFormat();
+        frmt.setIndent("  ");
+        frmt.setLineSeparator(System.getProperty("line.separator"));
+        XMLOutputter xmlOutputter = new XMLOutputter(frmt);
         xmlOutputter.output(document, writer);
     }
 
