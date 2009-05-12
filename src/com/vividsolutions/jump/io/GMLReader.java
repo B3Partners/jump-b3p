@@ -468,7 +468,7 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
                     geometry.add(apoint);
                 }
             } else if (STATE == STATE_GET_COLUMNS) {
-                if (qName.compareToIgnoreCase(GMLinput.featureTag) == 0) {
+                if (qName.compareTo(GMLinput.featureTag) == 0) {
                     tagBody = new StringBuffer();
                     STATE = STATE_WAIT_FEATURE_TAG;
 
