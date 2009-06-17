@@ -35,7 +35,6 @@ package com.vividsolutions.jump.workbench;
 
 import javax.swing.JInternalFrame;
 
-import sun.security.action.GetBooleanAction;
 
 import com.vividsolutions.jump.util.Blackboard;
 import com.vividsolutions.jump.workbench.driver.DriverManager;
