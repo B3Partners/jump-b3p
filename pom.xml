@@ -48,7 +48,7 @@
         <repository>
             <id>nl.b3p.gissuite</id>
             <name>B3P GIS Suite Maven Repository</name>
-            <url>file://${project.basedir}/../repo</url>
+            <url>file://${project.basedir}/../B3pGisSuiteMvnRepo</url>
         </repository>
         <repository>
             <id>osgeo</id>
