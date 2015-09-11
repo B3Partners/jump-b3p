@@ -49,9 +49,39 @@
             <url>file://${project.basedir}/../B3pGisSuiteMvnRepo</url>
         </repository>
        <repository>
+            <id>repo.b3p.nl</id>
+            <name>B3P file Repository</name>
+            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
+        </repository>
+       <repository>
             <id>repository.jboss.org-public</id>
             <name>JBoss.org Maven repository</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
+    <scm>
+        <connection>scm:git:git@github.com:B3Partners/jump-b3p.git</connection>
+        <developerConnection>scm:git:git@github.com:B3Partners/jump-b3p.git</developerConnection>
+        <url>https://github.com/B3Partners/jump-b3p</url>
+      <tag>jump-b3p-4.2.1</tag>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>repo.b3p.nl</id>
+            <name>B3P file Repository</name>
+            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+    <build>        
+        <plugins>            
+            <plugin>                
+                <groupId>org.apache.maven.plugins</groupId>                
+                <artifactId>maven-release-plugin</artifactId>                
+                <version>2.5.2</version>                
+                <configuration>                    
+                    <pushChanges>true</pushChanges>                
+                </configuration>            
+            </plugin>
+        </plugins>
+    </build>
 </project>
