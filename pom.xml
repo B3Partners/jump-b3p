@@ -43,11 +43,6 @@
         </dependency>
     </dependencies>
     <repositories>
-        <repository>
-            <id>nl.b3p.gissuite</id>
-            <name>B3P GIS Suite Maven Repository</name>
-            <url>file://${project.basedir}/../B3pGisSuiteMvnRepo</url>
-        </repository>
        <repository>
             <id>repo.b3p.nl</id>
             <name>B3P file Repository</name>
@@ -63,7 +58,7 @@
         <connection>scm:git:git@github.com:B3Partners/jump-b3p.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/jump-b3p.git</developerConnection>
         <url>https://github.com/B3Partners/jump-b3p</url>
-      <tag>jump-b3p-4.2.1</tag>
+      <tag>jump-b3p-${project.version}</tag>
     </scm>
     <distributionManagement>
         <repository>
