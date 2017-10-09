@@ -36,11 +36,11 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.LangUtil;
 import com.vividsolutions.jump.util.StringUtil;
 
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
-import org.jdom.input.SAXBuilder;
+import org.jdom2.input.SAXBuilder;
 
 import java.awt.Color;
 import java.awt.Font;

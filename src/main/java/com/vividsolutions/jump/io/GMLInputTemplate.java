@@ -30,30 +30,36 @@
  * (250)385-6040
  * www.vividsolutions.com
  */
-
 package com.vividsolutions.jump.io;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
-
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.vividsolutions.jump.feature.AttributeType;
 import com.vividsolutions.jump.feature.FeatureSchema;
 import com.vividsolutions.jump.util.FlexibleDateParser;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Reads an XML file that starts with a 'JCSGMLInputTemplate'. <br>
  * Will abort read at the end of the 'JCSGMLInputTemplate' tag. <br>
  * Constructs a description of the Columns and geometry tag so the <br>
- * actual GML parser ({@link GMLReader}) will know what to do with different tags.
- *<br><Br>
- *This is a SAX Handler.
+ * actual GML parser ({@link GMLReader}) will know what to do with different
+ * tags.
+ * <br><Br>
+ * This is a SAX Handler.
  */
 public class GMLInputTemplate extends DefaultHandler {
+
     LineNumberReader myReader;
     XMLReader xr;
     String tagBody = "";
@@ -82,36 +88,42 @@ public class GMLInputTemplate extends DefaultHandler {
     Attributes lastStartTag_atts;
 
     /**
-     * constructor - makes a new org.apache.xerces.parser and makes this class be the SAX
-     *  content and error handler.
+     * constructor - makes a new org.apache.xerces.parser and makes this class
+     * be the SAX content and error handler.
      */
     public GMLInputTemplate() {
         super();
-        xr = new org.apache.xerces.parsers.SAXParser();
-        xr.setContentHandler(this);
-        xr.setErrorHandler(this);
+        try {
+            xr = javax.xml.parsers.SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            xr.setContentHandler(this);
+            xr.setErrorHandler(this);
+        } catch (ParserConfigurationException | SAXException ex) {
+            Logger.getLogger(GMLInputTemplate.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * Returns the column name for the 'index'th column.
-     *@param index 0=first
+     *
+     * @param index 0=first
      */
     public String columnName(int index) throws ParseException {
         if (loaded) {
             return ((ColumnDescription) columnDefinitions.get(index)).columnName;
         } else {
             throw new ParseException(
-                "requested columnName w/o loading the template");
+                    "requested columnName w/o loading the template");
         }
     }
 
     /**
      * Converts this GMLInputTemplate to a feature schema.
-     **/
+     *
+     */
     public FeatureSchema toFeatureSchema() throws ParseException {
         if (!(loaded)) {
             throw new ParseException(
-                "requested toFeatureSchema w/o loading the template");
+                    "requested toFeatureSchema w/o loading the template");
         }
 
         FeatureSchema fcmd = new FeatureSchema();
@@ -120,16 +132,19 @@ public class GMLInputTemplate extends DefaultHandler {
 
         for (int t = 0; t < columnDefinitions.size(); t++) {
             fcmd.addAttribute(((ColumnDescription) columnDefinitions.get(t)).columnName,
-                ((ColumnDescription) columnDefinitions.get(t)).getType());
+                    ((ColumnDescription) columnDefinitions.get(t)).getType());
         }
 
         return (fcmd);
     }
 
     /**
-     * Function to help the GMLParser - is this tag name the Geometry Element tag name?
-     *@param tag an XML tag name
-     **/
+     * Function to help the GMLParser - is this tag name the Geometry Element
+     * tag name?
+     *
+     * @param tag an XML tag name
+     *
+     */
     public boolean isGeometryElement(String tag) {
         int t;
         String s;
@@ -146,7 +161,8 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
-     * Helper function - load a GMLInputTemplate file with the stream name "Unknown Stream"
+     * Helper function - load a GMLInputTemplate file with the stream name
+     * "Unknown Stream"
      */
     public void load(java.io.Reader r) throws ParseException, IOException {
         load(r, "Unknown Stream");
@@ -155,11 +171,12 @@ public class GMLInputTemplate extends DefaultHandler {
     /**
      * Main function - load in an XML file. <br>
      * Error handling/reporting also done here.
-     *@param r where to read the XML file from
-     *@param readerName name of the stream for error reporting
+     *
+     * @param r where to read the XML file from
+     * @param readerName name of the stream for error reporting
      */
     public void load(java.io.Reader r, String readerName)
-        throws ParseException, IOException {
+            throws ParseException, IOException {
         myReader = new LineNumberReader(r);
         streamName = readerName; // for error reporting
 
@@ -168,18 +185,18 @@ public class GMLInputTemplate extends DefaultHandler {
         } catch (EndOfParseException e) {
             // This is not really an error
         } catch (SAXParseException e) {
-            throw new ParseException(e.getMessage() + " (Is this really a GML file?)  Last Opened Tag: " +
-                lastStartTag_qName + ".  Reader reports last line read as " +
-                myReader.getLineNumber(),
-                streamName + " - " + e.getPublicId() + " (" + e.getSystemId() +
-                ") ", e.getLineNumber(), e.getColumnNumber());
+            throw new ParseException(e.getMessage() + " (Is this really a GML file?)  Last Opened Tag: "
+                    + lastStartTag_qName + ".  Reader reports last line read as "
+                    + myReader.getLineNumber(),
+                    streamName + " - " + e.getPublicId() + " (" + e.getSystemId()
+                    + ") ", e.getLineNumber(), e.getColumnNumber());
         } catch (SAXException e) {
-            throw new ParseException(e.getMessage() + "  Last Opened Tag: " +
-                lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
+            throw new ParseException(e.getMessage() + "  Last Opened Tag: "
+                    + lastStartTag_qName, streamName, myReader.getLineNumber(), 0);
         }
 
-        loaded = (havecollectionTag) && (havefeatureTag) &&
-            (havegeometryElement);
+        loaded = (havecollectionTag) && (havefeatureTag)
+                && (havegeometryElement);
 
         if (!(loaded)) {
             String miss;
@@ -197,8 +214,8 @@ public class GMLInputTemplate extends DefaultHandler {
                 miss = miss + "Missing GeometryElement.  ";
             }
 
-            throw new ParseException("Failed to load the GML Input Template.  " +
-                miss);
+            throw new ParseException("Failed to load the GML Input Template.  "
+                    + miss);
         }
     }
 
@@ -210,7 +227,7 @@ public class GMLInputTemplate extends DefaultHandler {
             return collectionTag;
         } else {
             throw new ParseException(
-                "requested FeatureCollectionElementName w/o loading the template");
+                    "requested FeatureCollectionElementName w/o loading the template");
         }
     }
 
@@ -222,22 +239,24 @@ public class GMLInputTemplate extends DefaultHandler {
             return featureTag;
         } else {
             throw new ParseException(
-                "requested FeatureCollectionElementName w/o loading the template");
+                    "requested FeatureCollectionElementName w/o loading the template");
         }
     }
 
     /**
-     * Given a tag name and its XML attributes, find the index of the column it belongs to.<br>
+     * Given a tag name and its XML attributes, find the index of the column it
+     * belongs to.<br>
      * Returns -1 if it doesnt match any of the columns.
-     *@param XMLtagName the tag name found in the xml
-     *@param the attributes associated with the xml
+     *
+     * @param XMLtagName the tag name found in the xml
+     * @param the attributes associated with the xml
      */
     public int match(String XMLtagName, Attributes xmlAtts)
-        throws ParseException {
+            throws ParseException {
         if (loaded) {
             for (int t = 0; t < columnDefinitions.size(); t++) {
                 if (((ColumnDescription) columnDefinitions.get(t)).match(
-                            XMLtagName, xmlAtts) != 0) {
+                        XMLtagName, xmlAtts) != 0) {
                     return t;
                 }
             }
@@ -249,29 +268,30 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
-     * Given a ColumnDescription index, the XML tagBody, and the tag's attributes, return the
-     * actual value (it could be an attribute or the tag's body).  You probably got the index
-     * from the match() function.
+     * Given a ColumnDescription index, the XML tagBody, and the tag's
+     * attributes, return the actual value (it could be an attribute or the
+     * tag's body). You probably got the index from the match() function.
      *
-     *@param index index number of the column description
-     *@param tagBody value of the XML tag body
-     *@param xmlAtts key/values of the XML tag's attributes
-     **/
+     * @param index index number of the column description
+     * @param tagBody value of the XML tag body
+     * @param xmlAtts key/values of the XML tag's attributes
+     *
+     */
     public Object getColumnValue(int index, String tagBody, Attributes xmlAtts)
-        throws ParseException {
+            throws ParseException {
         String val;
         ColumnDescription cd;
 
         if (!(loaded)) {
             throw new ParseException(
-                "requested getColumnValue w/o loading the template");
+                    "requested getColumnValue w/o loading the template");
         }
 
         if (((ColumnDescription) columnDefinitions.get(index)).valueType == ColumnDescription.VALUE_IS_BODY) {
             val = tagBody;
         } else {
             val = xmlAtts.getValue(((ColumnDescription) columnDefinitions.get(
-                        index)).valueAttribute);
+                    index)).valueAttribute);
         }
 
         //have the value as a string, make it an object
@@ -288,14 +308,13 @@ public class GMLInputTemplate extends DefaultHandler {
                 //Dave Blasby says there was a reason for changing it to Long, but
                 //can't remember -- suspects there were datasets whose INTEGER
                 //values didn't fit in an Integer. [Jon Aquino 1/13/2004]
-                
+
                 //Compromise -- try Long if Integer fails. Some other parts of JUMP
                 //won't like it (exceptions), but it's better than null. Actually I don't like
                 //this null business -- future: warn the user. [Jon Aquino 1/13/2004]
                 try {
                     return new Integer(val);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     return new Long(val);
                 }
             } catch (Exception e) {
@@ -310,7 +329,7 @@ public class GMLInputTemplate extends DefaultHandler {
                 return null;
             }
         }
-        
+
         //Adding date support. Can we throw an exception if an exception
         //occurs or if the type is unrecognized? [Jon Aquino]
         if (cd.type == AttributeType.DATE) {
@@ -319,11 +338,11 @@ public class GMLInputTemplate extends DefaultHandler {
             } catch (Exception e) {
                 return null;
             }
-        }        
+        }
 
         return null; //unknown type
     }
-    
+
     private FlexibleDateParser dateParser = new FlexibleDateParser();
 
     ////////////////////////////////////////////////////////////////////
@@ -338,14 +357,13 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     public void fatalError(SAXParseException exception)
-        throws SAXException {
+            throws SAXException {
         throw exception;
     }
 
     ////////////////////////////////////////////////////////////////////
     // Event handlers.
     ////////////////////////////////////////////////////////////////////
-
     /**
      * SAX startDocument handler - null
      */
@@ -366,7 +384,7 @@ public class GMLInputTemplate extends DefaultHandler {
      * smarts are in the endElement handler.
      */
     public void startElement(String uri, String name, String qName,
-        Attributes atts) throws SAXException {
+            Attributes atts) throws SAXException {
         try {
             tagBody = "";
 
@@ -394,10 +412,11 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
-     * Helper function - get attribute in a case insensitive manner.
-     * returns index or -1 if not found.
-     *@param atts the attributes for the xml tag (from SAX)
-     *@param att_name the name of the attribute to search for
+     * Helper function - get attribute in a case insensitive manner. returns
+     * index or -1 if not found.
+     *
+     * @param atts the attributes for the xml tag (from SAX)
+     * @param att_name the name of the attribute to search for
      */
     int lookupAttribute(Attributes atts, String att_name) {
         int t;
@@ -412,19 +431,22 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
-     *  SAX endElement handler - the main working function <br>
-     *  <br>
-     *  handles the following tags in the appropriate manner: <br>
-     *  GeometryElement : sets the name of the document's geometry tag <bR>
-     *  CollectionElement : sets the name of the document's collection tag<br>
-     *  FeatureElement : sets the name of the document's feature tag<br>
-     *  type : sets a column type (to be used when a column ends) <br>
-     * valueelement : sets information about what element a column is associated with <br>
-     * valuelocation : set information about where a column's value is stored in the document <br>
-     * column : takes the accumlated information about a column and constructs a ColumnDescription object <bR>
+     * SAX endElement handler - the main working function <br>
+     * <br>
+     * handles the following tags in the appropriate manner: <br>
+     * GeometryElement : sets the name of the document's geometry tag <bR>
+     * CollectionElement : sets the name of the document's collection tag<br>
+     * FeatureElement : sets the name of the document's feature tag<br>
+     * type : sets a column type (to be used when a column ends) <br>
+     * valueelement : sets information about what element a column is associated
+     * with <br>
+     * valuelocation : set information about where a column's value is stored in
+     * the document <br>
+     * column : takes the accumlated information about a column and constructs a
+     * ColumnDescription object <bR>
      */
     public void endElement(String uri, String name, String qName)
-        throws SAXException {
+            throws SAXException {
         try {
             if (qName.equalsIgnoreCase("JCSGMLInputTemplate")) {
                 throw new EndOfParseException("Finished parsing input template");
@@ -482,18 +504,18 @@ public class GMLInputTemplate extends DefaultHandler {
 
                 if (attindex == -1) {
                     throw new SAXException(
-                        "column definition has 'valueelement' tag without 'elementname' attribute");
+                            "column definition has 'valueelement' tag without 'elementname' attribute");
                 }
 
                 columnDef_tagName = new String(lastStartTag_atts.getValue(
-                            attindex));
+                        attindex));
 
                 //attindex = lastStartTag_atts.getIndex("attributename");
                 attindex = lookupAttribute(lastStartTag_atts, "attributename");
 
                 if (attindex != -1) {
                     columnDef_tagAttribute = new String(lastStartTag_atts.getValue(
-                                attindex));
+                            attindex));
                     columnDef_tagType = 2;
 
                     //attindex = lastStartTag_atts.getIndex("attributevalue");
@@ -502,7 +524,7 @@ public class GMLInputTemplate extends DefaultHandler {
 
                     if (attindex != -1) {
                         columnDef_tagValue = new String(lastStartTag_atts.getValue(
-                                    attindex));
+                                attindex));
                         columnDef_tagType = 3;
                     }
                 }
@@ -516,7 +538,7 @@ public class GMLInputTemplate extends DefaultHandler {
 
                 if (attindex == -1) {
                     throw new SAXException(
-                        "column definition has 'valuelocation' tag without 'position' attribute");
+                            "column definition has 'valuelocation' tag without 'position' attribute");
                 }
 
                 if (lastStartTag_atts.getValue(attindex).equalsIgnoreCase("body")) {
@@ -529,11 +551,11 @@ public class GMLInputTemplate extends DefaultHandler {
 
                     if (attindex == -1) {
                         throw new SAXException(
-                            "column definition has 'valuelocation' tag, attribute type, but no 'attributename' attribute");
+                                "column definition has 'valuelocation' tag, attribute type, but no 'attributename' attribute");
                     }
 
                     columnDef_valueAttribute = new String(lastStartTag_atts.getValue(
-                                attindex));
+                            attindex));
                 }
             }
 
@@ -541,17 +563,17 @@ public class GMLInputTemplate extends DefaultHandler {
                 //commit column entry
                 if (columnDef_tagName.equalsIgnoreCase("")) {
                     throw new SAXException(
-                        "column Definition didnt include tag name ('<name>...</name>')");
+                            "column Definition didnt include tag name ('<name>...</name>')");
                 }
 
                 if (columnDef_tagType == 0) {
                     throw new SAXException(
-                        "column Definition didnt include 'valueelement' ");
+                            "column Definition didnt include 'valueelement' ");
                 }
 
                 if (columnDef_valueType == 0) {
                     throw new SAXException(
-                        "column Definition didnt have a 'valuelocation'");
+                            "column Definition didnt have a 'valuelocation'");
                 }
 
                 //we're okay
@@ -562,20 +584,20 @@ public class GMLInputTemplate extends DefaultHandler {
 
                 if (colDes.columnName.compareTo("GEOMETRY") == 0) {
                     throw new ParseException(
-                        "Cannot have a column named GEOMETRY!");
+                            "Cannot have a column named GEOMETRY!");
                 }
 
                 if (columnDef_valueType == 2) //auto set for #1=body
-                 {
+                {
                     colDes.setValueAttribute(columnDef_valueAttribute); //not the body
                 }
 
                 colDes.setTagName(columnDef_tagName);
 
                 if (columnDef_tagType == 3) //1=simple
-                 {
+                {
                     colDes.setTagAttribute(columnDef_tagAttribute,
-                        columnDef_tagValue);
+                            columnDef_tagValue);
                 }
 
                 if (columnDef_tagType == 2) {
@@ -593,10 +615,10 @@ public class GMLInputTemplate extends DefaultHandler {
     }
 
     /**
-     *SAX handler for characters - just store and accumulate for later use
+     * SAX handler for characters - just store and accumulate for later use
      */
     public void characters(char[] ch, int start, int length)
-        throws SAXException {
+            throws SAXException {
         try {
             String part;
             part = new String(ch, start, length);
