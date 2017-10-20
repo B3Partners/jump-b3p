@@ -11,7 +11,17 @@
         <maven.compiler.source>${project.build.sourceVersion}</maven.compiler.source>
         <maven.compiler.target>${project.build.targetVersion}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.jdkPlatform>JDK_${project.build.targetVersion}</netbeans.hint.jdkPlatform>
     </properties>
+    <organization>
+        <name>B3Partners B.V.</name>
+        <url>http://www.b3partners.nl/</url>
+    </organization>
+    <url>https://github.com/B3Partners/${project.artifactId}/</url>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/B3Partners/${project.artifactId}/issues</url>
+    </issueManagement>
     <dependencies>
         <dependency>
             <groupId>com.vividsolutions</groupId>
@@ -50,6 +60,11 @@
             <name>B3P snapshot Repository</name>
             <url>http://repo.b3p.nl/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
+        <site>
+            <id>gh-pages</id>
+            <name>github pages site</name>
+            <url>github:http://b3partners.github.io/${project.artifactId}/</url>
+        </site>
     </distributionManagement>
     <build>        
         <plugins>            
@@ -57,6 +72,44 @@
                 <groupId>org.apache.maven.plugins</groupId>                
                 <artifactId>maven-release-plugin</artifactId>                
                 <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.6</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.trajano.wagon</groupId>
+                        <artifactId>wagon-git</artifactId>
+                        <!-- 2.0.4 heeft problemen met accepteren/toevoegen van de RSA fingerprint -->
+                        <version>2.0.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <generateSitemap>true</generateSitemap>
+                    <attach>false</attach>
+                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+                    <locales>nl</locales>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
+                    <reportPlugins>
+                        <plugin>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <!-- java 8 doclint van struikelt over de gegenereerde code; uitzetten! -->
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                            </configuration>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>javadoc-no-fork</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
             </plugin>
         </plugins>
     </build>
