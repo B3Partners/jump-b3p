@@ -40,9 +40,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 
-import org.apache.xerces.parsers.DOMParser;
+import javax.xml.parsers.*;
 import org.w3c.dom.*;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.vividsolutions.wms.util.XMLTools;
@@ -67,19 +66,18 @@ public class Parser {
    * @param inStream the inputStream containing the WMT_MS_Capabilities XML to parse
    * @return the MapDescriptor object created from the specified XML InputStream
    */
-  public Capabilities parseCapabilities( WMService service, InputStream inStream ) throws IOException {
+    public Capabilities parseCapabilities(WMService service, InputStream inStream) throws IOException {
     MapLayer topLayer = null;
     String title = null;
     LinkedList formatList = new LinkedList();
     Document doc;
     
     try {
-      DOMParser parser = new DOMParser();
-      parser.setFeature( "http://xml.org/sax/features/validation", false );
-      parser.parse( new InputSource( inStream ) );
-      doc = parser.getDocument();
-      // DEBUG: XMLTools.printNode( doc, "" );
-    } catch( SAXException saxe ) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        doc = builder.parse(inStream);
+        // DEBUG: XMLTools.printNode( doc, "" );
+    } catch (SAXException | ParserConfigurationException saxe) {
       throw new IOException( saxe.toString() );
     }
     

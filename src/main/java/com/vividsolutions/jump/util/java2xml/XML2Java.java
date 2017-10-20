@@ -42,8 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jump.util.StringUtil;

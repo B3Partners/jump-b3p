@@ -3,79 +3,113 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.b3p</groupId>
     <artifactId>jump-b3p</artifactId>
-    <version>4.2.2-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
     <properties>
-        <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+        <project.build.sourceVersion>1.8</project.build.sourceVersion>
+        <project.build.targetVersion>1.8</project.build.targetVersion>
+        <maven.compiler.source>${project.build.sourceVersion}</maven.compiler.source>
+        <maven.compiler.target>${project.build.targetVersion}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.jdkPlatform>JDK_${project.build.targetVersion}</netbeans.hint.jdkPlatform>
     </properties>
-    
+    <organization>
+        <name>B3Partners B.V.</name>
+        <url>http://www.b3partners.nl/</url>
+    </organization>
+    <url>https://github.com/B3Partners/${project.artifactId}/</url>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/B3Partners/${project.artifactId}/issues</url>
+    </issueManagement>
     <dependencies>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>1.13</version>
+            <artifactId>jts-core</artifactId>
+            <version>1.14.0</version>
         </dependency>
         <dependency>
-            <groupId>apache-xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.0</version>
-        </dependency>
-        <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.0</version>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>2.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.beanshell</groupId>
             <artifactId>bsh</artifactId>
-            <version>2.0b4</version>
+            <version>2.0b5</version>
         </dependency>
         <dependency>
             <groupId>gov.nist.math</groupId>
             <artifactId>jama</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
-    <repositories>
-       <repository>
-            <id>repo.b3p.nl</id>
-            <name>B3P file Repository</name>
-            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
-        </repository>
-       <repository>
-            <id>repository.jboss.org-public</id>
-            <name>JBoss.org Maven repository</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
     <scm>
         <connection>scm:git:git@github.com:B3Partners/jump-b3p.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/jump-b3p.git</developerConnection>
         <url>https://github.com/B3Partners/jump-b3p</url>
-      <tag>jump-b3p-${project.version}</tag>
     </scm>
     <distributionManagement>
         <repository>
             <id>repo.b3p.nl</id>
-            <name>B3P file Repository</name>
+            <name>B3P release Repository</name>
             <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
         </repository>
+        <snapshotRepository>
+            <id>repo.b3p.nl</id>
+            <name>B3P snapshot Repository</name>
+            <url>http://repo.b3p.nl/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <site>
+            <id>gh-pages</id>
+            <name>github pages site</name>
+            <url>github:http://b3partners.github.io/${project.artifactId}/</url>
+        </site>
     </distributionManagement>
     <build>        
         <plugins>            
             <plugin>                
                 <groupId>org.apache.maven.plugins</groupId>                
                 <artifactId>maven-release-plugin</artifactId>                
-                <version>2.5.2</version>                
-                <configuration>                    
-                    <pushChanges>true</pushChanges>                
-                </configuration>            
+                <version>2.5.3</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.6</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.trajano.wagon</groupId>
+                        <artifactId>wagon-git</artifactId>
+                        <!-- 2.0.4 heeft problemen met accepteren/toevoegen van de RSA fingerprint -->
+                        <version>2.0.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <generateSitemap>true</generateSitemap>
+                    <attach>false</attach>
+                    <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+                    <locales>nl</locales>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
+                    <reportPlugins>
+                        <plugin>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <!-- java 8 doclint van struikelt over de gegenereerde code; uitzetten! -->
+                                <additionalparam>-Xdoclint:none</additionalparam>
+                            </configuration>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>javadoc-no-fork</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
             </plugin>
         </plugins>
     </build>

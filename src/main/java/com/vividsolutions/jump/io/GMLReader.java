@@ -43,6 +43,9 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 /**
@@ -290,9 +293,13 @@ public class GMLReader extends DefaultHandler implements JUMPReader {
      */
     public GMLReader() {
         super();
-        xr = new org.apache.xerces.parsers.SAXParser();
-        xr.setContentHandler(this);
-        xr.setErrorHandler(this);
+        try {
+            xr = javax.xml.parsers.SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+            xr.setContentHandler(this);
+            xr.setErrorHandler(this);
+        } catch (ParserConfigurationException | SAXException ex) {
+            Logger.getLogger(GMLInputTemplate.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
