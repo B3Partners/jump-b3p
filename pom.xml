@@ -12,6 +12,7 @@
         <maven.compiler.target>${project.build.targetVersion}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.jdkPlatform>JDK_${project.build.targetVersion}</netbeans.hint.jdkPlatform>
+        <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
     </properties>
     <organization>
         <name>B3Partners B.V.</name>
@@ -48,8 +49,8 @@
         <connection>scm:git:git@github.com:B3Partners/jump-b3p.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/jump-b3p.git</developerConnection>
         <url>https://github.com/B3Partners/jump-b3p</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <distributionManagement>
         <repository>
             <id>repo.b3p.nl</id>
@@ -64,7 +65,7 @@
         <site>
             <id>gh-pages</id>
             <name>github pages site</name>
-            <url>github:http://b3partners.github.io/${project.artifactId}/</url>
+            <url>scm:git:ssh://git@github.com/b3partners/${project.artifactId}.git</url>
         </site>
     </distributionManagement>
     <build>        
@@ -76,49 +77,62 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <excludePackageNames>nl.b3p</excludePackageNames>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.6</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.trajano.wagon</groupId>
-                        <artifactId>wagon-git</artifactId>
-                        <!-- 2.0.4 heeft problemen met accepteren/toevoegen van de RSA fingerprint -->
-                        <version>2.0.3</version>
-                    </dependency>
-                </dependencies>
+                <version>3.7</version>
                 <configuration>
+                    <skipDeploy>true</skipDeploy>
                     <generateSitemap>true</generateSitemap>
                     <attach>false</attach>
                     <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
                     <locales>nl</locales>
                     <relativizeDecorationLinks>false</relativizeDecorationLinks>
-                    <reportPlugins>
-                        <plugin>
-                            <artifactId>maven-project-info-reports-plugin</artifactId>
-                        </plugin>
-                        <plugin>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <configuration>
-                                <!-- java 8 doclint van struikelt over de gegenereerde code; uitzetten! -->
-                                <additionalparam>-Xdoclint:none</additionalparam>
-                            </configuration>
-                            <reportSets>
-                                <reportSet>
-                                    <reports>
-                                        <report>javadoc-no-fork</report>
-                                    </reports>
-                                </reportSet>
-                            </reportSets>
-                        </plugin>
-                    </reportPlugins>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <content>${project.reporting.outputDirectory}</content>
+                    <scmBranch>gh-pages</scmBranch>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>scm-publish</id>
+                        <phase>site-deploy</phase>
+                        <goals>
+                            <goal>publish-scm</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.9</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc-no-fork</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
