@@ -12,7 +12,7 @@
         <maven.compiler.target>${project.build.targetVersion}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.jdkPlatform>JDK_${project.build.targetVersion}</netbeans.hint.jdkPlatform>
-        <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
     </properties>
     <organization>
         <name>B3Partners B.V.</name>
