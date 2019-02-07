@@ -2,9 +2,9 @@ package org.geotools.shapefile;
 
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.io.EndianDataInputStream;
-import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.jump.io.EndianDataInputStream;
+import org.locationtech.jts.jump.io.EndianDataOutputStream;
 /**
  * Wrapper for a Shapefile point.
  */

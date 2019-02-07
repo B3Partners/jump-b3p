@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.geotools.misc.FormatedString;
 
-import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.jump.io.EndianDataOutputStream;
 
 
 
