@@ -1,8 +1,8 @@
 package org.geotools.shapefile;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jump.io.EndianDataInputStream;
-import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.jump.io.EndianDataInputStream;
+import org.locationtech.jts.jump.io.EndianDataOutputStream;
 
 public interface ShapeHandler {
     public int getShapeType();

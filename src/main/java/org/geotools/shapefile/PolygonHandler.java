@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jump.io.EndianDataInputStream;
-import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.jump.io.EndianDataInputStream;
+import org.locationtech.jts.jump.io.EndianDataOutputStream;
 
 /**
  * Wrapper for a Shapefile polygon.
  */
 public class PolygonHandler implements ShapeHandler{
-    protected static CGAlgorithms cga = new RobustCGAlgorithms();
+    protected static CGAlgorithms cga = new CGAlgorithms();
     int myShapeType;
     
     public PolygonHandler()

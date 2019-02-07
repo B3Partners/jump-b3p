@@ -1,6 +1,6 @@
 package org.geotools.dbffile;
 
-import com.vividsolutions.jump.io.EndianDataInputStream;
+import org.locationtech.jts.jump.io.EndianDataInputStream;
 
 import java.io.*;
 

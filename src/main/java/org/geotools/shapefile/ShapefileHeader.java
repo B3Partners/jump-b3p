@@ -8,10 +8,10 @@ package org.geotools.shapefile;
 
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jump.io.EndianDataInputStream;
-import com.vividsolutions.jump.io.EndianDataOutputStream;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.jump.io.EndianDataInputStream;
+import org.locationtech.jts.jump.io.EndianDataOutputStream;
 
 /**
  *
