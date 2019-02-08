@@ -80,6 +80,7 @@
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <excludePackageNames>nl.b3p</excludePackageNames>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
             <plugin>
