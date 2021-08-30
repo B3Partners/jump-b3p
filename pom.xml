@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.b3p</groupId>
     <artifactId>jump-b3p</artifactId>
-    <version>6.0</version>
+    <version>6.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceVersion>1.8</project.build.sourceVersion>
@@ -49,7 +49,7 @@
         <connection>scm:git:git@github.com:B3Partners/jump-b3p.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/jump-b3p.git</developerConnection>
         <url>https://github.com/B3Partners/jump-b3p</url>
-        <tag>jump-b3p-6.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <distributionManagement>
         <repository>
